@@ -16,10 +16,3 @@ ones, twoes, threes, fours, fives, sixes = [ generate_upper_section_combination_
 
 # Generating massive with upper section functions
 upper_section_combination_funcs = [ ones, twoes, threes, fours, fives, sixes ]
-
-print(ones([0, 1, 1, 1, 2, 3, 4]))
-print(upper_section_combination_funcs[0]([0, 1, 1, 1, 2, 3, 4]))
-
-
-
-
