@@ -2,7 +2,7 @@
 
 ### About Game
 
-This is a game called “Yatzy” with the modification “Maxi”. In this game you have to roll the dice and then choose the appropriate combinations. The game ends when there are no combinations left, you can read more about this game and its modifications here. 
+This is a game called “Yatzy” with the modification “Maxi”. In this game you have to roll the dice and then choose the appropriate combinations. The game ends when there are no combinations left, you can read more about this game and its modifications [here](https://en.wikipedia.org/wiki/Yatzy). 
 
 ### About project
 
@@ -15,7 +15,7 @@ The project includes all the features of a board game (except that you can not t
 
 Since we were not able to use classes and objects, we had to use other methods.
 
-> Main problem: multiple checks (branching)
+#### Main problem: multiple checks (branching)
 
 Difficulties are caused by the fact that there are a total of 20 combinations in the game. First of all: to display active combinations to the user we need to make 20 if else expressions, which complicates the readability of the code significantly, but in addition, the combinations have a different algorithm for scoring points. 
 
@@ -138,9 +138,9 @@ Let's talk about the points function in more detail.
 
 Each combination will have its own scoring function, it will return a unique number of points corresponding to the scoring rules for this combination if the combination is applicable to the current set of dice and 0 points if it is not applicable. This will solve two problems at once: branching and counting, since to check the applicability of a combination, you just need to enter the set of dice into the function, and if the function returns zero, make sure that the combination is not applicable, and in order to count the points, we just need to do it again. As a result, instead of 40 checks, we will only need to make a loop. However, now another problem appears.
 
-> Lots of functions
+#### Lots of functions
 
-We will need to create 20 functions, which significantly complicates the readability of the code. However, if you look at the combinations in the top section, you can see a pattern: all they do is find the number of dice with the value (1, 2, 3, 4, 5, 6), and then multiply this number by this very value. As a result, we will need to create 6 one-line functions, the algorithm of which differs by only one digit. Python has a tool that allows you to solve this problem - wrapper. Using this tool is not prohibited, since in essence it is a function, which in turn returns other functions. That is, wrapper is a function generator. Now we can create 6 functions with just one cycle, and then enter them into an array, which will significantly simplify the understanding of the code and facilitate the solution of the problem.
+We will need to create 20 functions, which significantly complicates the readability of the code. However, if you look at the combinations in the top section, you can see a pattern: all they do is find the number of dice with the value (1, 2, 3, 4, 5, 6), and then multiply this number by this very value. As a result, we will need to create 6 one-line functions, the algorithm of which differs by only one digit. Python has a tool that allows you to solve this problem - [wrapper](https://www.geeksforgeeks.org/function-wrappers-in-python). Using this tool is not prohibited, since in essence it is a function, which in turn returns other functions. That is, wrapper is a function generator. Now we can create 6 functions with just one cycle, and then enter them into an array, which will significantly simplify the understanding of the code and facilitate the solution of the problem.
 
 As a result, we implemented a system of classes and objects using only dictionaries, arrays and functions. Which in turn does not violate the condition of the task.
 
