@@ -1,7 +1,7 @@
 import random
 import points_functions
 
-# generate_players: returns massive with players
+# generate_players: returns dictionary with players
 def generate_players(amount):
 
     upper_section_names = [ "Ones", "Twos", "Threes", "Fours", "Fives", "Sixes" ]
