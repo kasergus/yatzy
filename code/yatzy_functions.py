@@ -14,7 +14,7 @@ def generate_players(amount):
                         } 
                     for upper_section_combination_name, upper_section_combination_func in zip(upper_section_names, points_functions.upper_section_combination_funcs) }
 
-    lower_section = [ "One Pair", "Two Pairs", "Three Pairs", "Three of a Kind", "Four of a Kind", "Five of a Kind", "Full House", "Castle", "Tower", "Small Straight", "Large Straight", "Full Straight", "Chance", "Maxi Yatzy" ] 
+    lower_section = [ "One Pair", "Two Pairs", "Three Pairs", "Three of a Kind", "Four of a Kind", "Five of a Kind", "Small Straight", "Large Straight", "Full Straight", "Full House", "Castle", "Tower", "Chance", "Maxi Yatzy" ] 
     players = {} 
 
     # Creating players and adding combination with current dices to each
