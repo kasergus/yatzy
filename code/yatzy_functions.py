@@ -1,4 +1,5 @@
 import random
+import copy
 import points_functions
 
 # generate_players: returns dictionary with players
@@ -6,23 +7,37 @@ def generate_players(amount):
 
     upper_section_names = [ "Ones", "Twos", "Threes", "Fours", "Fives", "Sixes" ]
 
-    # Creating dictionary with combination, which contains function for taking points and amount of points
-    upper_section = { upper_section_combination_name: 
-                        { 
-                            "function": upper_section_combination_func,
-                            "points": 0
-                        } 
-                    for upper_section_combination_name, upper_section_combination_func in zip(upper_section_names, points_functions.upper_section_combination_funcs) }
+    upper_section = { 
+        upper_section_combination_name: {
+            "function": upper_section_combination_func,
+            "points": -1 
+        } 
+        for upper_section_combination_name, upper_section_combination_func in zip(upper_section_names, points_functions.upper_section_combination_funcs) 
+    }
 
-    lower_section = [ "One Pair", "Two Pairs", "Three Pairs", "Three of a Kind", "Four of a Kind", "Five of a Kind", "Small Straight", "Large Straight", "Full Straight", "Full House", "Castle", "Tower", "Chance", "Maxi Yatzy" ] 
-    players = {} 
+    lower_section_names = [ "One Pair", "Two Pairs", "Three Pairs", "Three of a Kind", "Four of a Kind", "Five of a Kind", "Small Straight", "Large Straight", "Full Straight", "Full House", "Castle", "Tower", "Chance", "Maxi Yatzy" ] 
+
+    lower_section = {
+        lower_section_combination_name: {
+            "function": lower_section_combination_func,
+            "points": -1
+        }
+        for lower_section_combination_name, lower_section_combination_func in zip(lower_section_names, points_functions.lower_section_combination_funcs)
+    }
+
 
     # Creating players and adding combination with current dices to each
+    players = {} 
     for player_number in range(1, amount+1):
-        players[f"Player {player_number}"] = dict.fromkeys(["Combinations", "Current dices"], 0)
-        players[f"Player {player_number}"]["Combinations"] = { "Upper Section": upper_section, "Lower Section": lower_section }
-        players[f"Player {player_number}"]["Current dices"] = []
-
+        current_player = f"Player {player_number}"
+        players[current_player] = {
+            "Combinations": {
+                "Upper Section": copy.deepcopy(upper_section), 
+                "Lower Section": copy.deepcopy(lower_section) 
+            },
+            "Current dices": [],
+            "available": True
+        }
     return players
 
 
@@ -100,3 +115,11 @@ def get_dices(dices_amount=6, maximum_rerolls=2):
             rerolls -= 1
 
     return dices
+
+def render_box(string):
+    string = "│ " + string + " │"
+    print("═" * 100)
+    print("╭" + "─" * (len(string) - 2) + "╮")
+    print(string)
+    print("╰" + "─" * (len(string) - 2) + "╯")
+    print("═" * 100)

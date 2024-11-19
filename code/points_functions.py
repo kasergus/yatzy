@@ -33,36 +33,35 @@ def two_pairs(dices):
     sum_of_first_pair = largest_duplicate * 2
     sum_of_second_pair = max(dices_duplicates_without_largest_duplicate) * 2
 
-    print(dices_duplicates_without_largest_duplicate)
     return (sum_of_first_pair + sum_of_second_pair) * ((len(dices_duplicates_without_largest_duplicate) - 1) >= 1)  # multiplying by check if there is more than one pair 
 
 # three_pairs: returns sum of three pairs of different duplicates
 def three_pairs(dices):
     dices_duplicates = set(duplicates(dices))
 
-    if len(dices_duplicates) == 3:
-        return sum(dices_duplicates) * 2
-    return 0
+    return sum(dices_duplicates) * 2 * (len(dices_duplicates) == 3)
 
 # three_of_a_kind: returns sum of three biggest duplicates
 def three_of_a_kind(dices):
     dices_duplicates = duplicates(dices)
     ordered_dices_duplicates = set(dices_duplicates)
 
-    return max(dices_duplicates + [0]) * 3 * ((len(dices_duplicates) / len(ordered_dices_duplicates)) != 2)  # multiplying by check if there is three same numbers
+    if not len(ordered_dices_duplicates):
+        return 0
+
+    return max(dices_duplicates) * 3 * ((len(dices_duplicates) / len(ordered_dices_duplicates)) != 2)  # multiplying by check if there is three same numbers
  
 # four_of_a_kind: returns sum of three duplicates
 def four_of_a_kind(dices):
     dices_duplicates = duplicates(dices) + [0, 0]
     
-    return max(dices_duplicates) * 4 * (dices_duplicates.count(dices_duplicates[0]) == 4 or dices_duplicates.count(dices_duplicates[1]) == 4)  # multiplying by check if there is four same numbers
+    return max(dices_duplicates) * 4 * (dices_duplicates.count(dices_duplicates[0]) >= 4 or dices_duplicates.count(dices_duplicates[1]) >= 4)  # multiplying by check if there is four same numbers
 
 # five_of_a_kind: returns sum of five duplicates
 def five_of_a_kind(dices):
     dices_duplicates = duplicates(dices) + [0]
 
-    return max(dices_duplicates) * 5 * (dices_duplicates.count(dices_duplicates[0]) == 5)  # multiplying by check if there is five same numbers 
-
+    return max(dices_duplicates) * 5 * (dices_duplicates.count(dices_duplicates[0]) >= 5)  # multiplying by check if there is five (or more) same numbers 
 # small_straight: returns 15 if there is 1, 2, 3, 4 and 5 in the dices
 def small_straight(dices):
     return 15 * {1, 2, 3, 4, 5}.issubset(set(dices))
@@ -77,7 +76,7 @@ def full_straight(dices):
 
 # full_house: returns sum of combination of 3 duplicates of one type and 2 duplicates of another type
 def full_house(dices):
-    dices_duplicates = duplicates(dices) + [0]
+    dices_duplicates = duplicates(dices)
     ordered_dices_duplicates = set(dices_duplicates)
 
     # check if there is more than five duplicates and remove if yes
@@ -90,23 +89,23 @@ def full_house(dices):
 
 # castle: returns sum of all dices if there is 3 duplicates of one type and 3 duplicates of another type
 def castle(dices):
-    dices_duplicates = duplicates(dices) + [0]
+    dices_duplicates = duplicates(dices)
 
-    return sum(dices_duplicates) * (dices_duplicates.count(dices_duplicates[0]) == 3 and len(dices_duplicates) == 6)
+    return sum(dices_duplicates) * (dices_duplicates.count((dices_duplicates + [0])[0]) == 3 and len(dices_duplicates) == 6)
 
 # tower: returns sum of all dices if there is 4 duplicates of one type and 2 duplicates of another type 
 def tower(dices):
     dices_duplicates = duplicates(dices)
 
-    return sum(dices_duplicates) * (dices_duplicates.count(dices_duplicates[0]) != 3 and len(set(dices_duplicates)) == 2)
+    return sum(dices_duplicates) * (dices_duplicates.count((dices_duplicates + [0])[0]) != 3 and len(set(dices_duplicates)) == 2 and len(dices_duplicates) == 6)
 
 # chance: returns sum of all dices
 def chance(dices):
     return sum(dices)
 
-# maxi_yatzy: returns 100 if all dices are sixes
+# maxi_yatzy: returns 100 if all dices are same
 def maxi_yatzy(dices):
-    return 100 * (dices.count(6) == 6)
+    return 100 * (dices.count(dices[0]) == 6)
 
 
 
