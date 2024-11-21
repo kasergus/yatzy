@@ -12,6 +12,13 @@ def main():
 
     players = yatzy_functions.generate_players(players_amount)
 
+    global_combination_number = 0
+    all_combinations = {}
+    for section in players["Player 1"]["Combinations"]:
+        for combination in players["Player 1"]["Combinations"][section]:
+            global_combination_number += 1
+            all_combinations[global_combination_number] = { "section": section, "combination": combination }
+
     game_over = False
     while not game_over:
         for player in players:
@@ -27,7 +34,6 @@ def main():
             dices = [1, 2, 3, 4, 6, 1]
             players[player]["Current dices"] = dices[:]  # Added [:] to create a new massive
     
-            yatzy_functions.render_box(f"Your dices: {dices}")
 
             unused_combinations = {}
             available_combinations = {}
@@ -44,17 +50,42 @@ def main():
                             available_combinations[available_combination_number] = { "section": section, "combination": combination }
     
             if len(available_combinations):    
+                print("Your scoresheet:")
+                print("┏" + "━" * 17 + "┳" + "━"*5 + "┓")
+
                 combination_number = 1
-                print("Available combinations: ")
+                section = all_combinations[combination_number]["section"]
+                combination = all_combinations[combination_number]["combination"]
+                points = players[player]["Combinations"][section][combination]["points"]
+                if points == -1:
+                        points = '-'
+                while combination_number < len(all_combinations):
+                    print("┃ {:<15} ┃ ".format(combination), end='')
+                    print("{:<3} ┃".format(points))
+                    print("┣" + "━" * 17 + "╋" + "━" * 5 + "┫")
+                    combination_number += 1
+                    section = all_combinations[combination_number]["section"]
+                    combination = all_combinations[combination_number]["combination"]
+                    points = players[player]["Combinations"][section][combination]["points"]
+                    if points == -1:
+                        points = '-'
+                print("┃ {:<15} ┃ ".format(combination), end='')
+                print("{:<3} ┃".format(points))
+                print("┗" + "━" * 17 + "┻" + "━" * 5 + "┛" + '\n')
+
+                yatzy_functions.render_box(f"Your dices: {dices}") 
+                print("\nAvailable combinations: ") 
+                combination_number = 1
                 while combination_number <= len(available_combinations):
                     section = available_combinations[combination_number]["section"]
-                    print("\n" + "━"*100 + f"\n{available_combinations[combination_number]["section"]}:\n")
+                    print("━"*100 + f"\n{available_combinations[combination_number]["section"]}:\n")
                     while combination_number <= len(available_combinations) and section == available_combinations[combination_number]["section"]:
                         print(f"{combination_number}. { available_combinations[combination_number]["combination"] }")
                         combination_number += 1
+                print("━"*100 + "\n")
                 user_choice = yatzy_functions.safe_int_input(0, available_combination_number, "\nPick combination which you want to use or 0 if you want to cross\n○ ")
-                print()
             else:
+                yatzy_functions.render_box(f"Your dices: {dices}")
                 user_choice = 0
                 print("There is no available combinations for your dices :(\n")
 
@@ -79,7 +110,35 @@ def main():
             
 
         game_over = set([players[f"Player {player_number}"]["available"] for player_number in range(1, players_amount + 1)]) == {0}
-    
-    print("[#] Game over!")
+
+
+    print("\n" * 10)
+    print("╤" * 100 + "\n")
+    score = []
+    table = [ ("┏" + "━" * 10 + "┳" + "━" * 5 + "┓" + "\n") ]
+    for player in players:
+        player_points = sum([ players[player]["Combinations"][all_combinations[number]["section"]][all_combinations[number]["combination"]]["points"] for number in range(1, len(all_combinations) + 1)])
+        table += [ "┃ {:<6} ┃ ".format(player)]
+        table += [ "{:<3} ┃".format(player_points) + "\n" ]
+        table += ["┣" + "━" * 10 + "╋" + "━" * 5 + "┫" + "\n"]
+        score.append([player, player_points])
+    table.pop()
+    table += [ "┗" + "━" * 10 + "┻" + "━" * 5 + "┛" + "\n" ]
+    print(''.join(table))
+    score = sorted(score, key = lambda element: element[1], reverse=True)
+    all_points = [ player_points[1] for player_points in score]
+    winner = max(all_points)
+    if all_points.count(winner) > 1:
+        print(f"Draw between: {score[0][0]}", end = '')
+        winner_number = 1
+        while winner_number < len(score) and score[winner_number][1] == score[0][1]:
+            print(f" and {score[winner_number][0]}")
+            winner_number += 1
+        print()
+    else:
+        print(f"{score[0][0]} is winner!\n")
+
+    print("╧" * 100)
+
 
 main()
