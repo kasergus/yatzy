@@ -2,44 +2,6 @@ import random
 import copy
 import points_functions
 
-# generate_players: returns dictionary with players
-def generate_players(amount):
-
-    upper_section_names = [ "Ones", "Twos", "Threes", "Fours", "Fives", "Sixes" ]
-
-    upper_section = { 
-        upper_section_combination_name: {
-            "function": upper_section_combination_func,
-            "points": -1 
-        } 
-        for upper_section_combination_name, upper_section_combination_func in zip(upper_section_names, points_functions.upper_section_combination_funcs) 
-    }
-
-    lower_section_names = [ "One Pair", "Two Pairs", "Three Pairs", "Three of a Kind", "Four of a Kind", "Five of a Kind", "Small Straight", "Large Straight", "Full Straight", "Full House", "Castle", "Tower", "Chance", "Maxi Yatzy" ] 
-
-    lower_section = {
-        lower_section_combination_name: {
-            "function": lower_section_combination_func,
-            "points": -1
-        }
-        for lower_section_combination_name, lower_section_combination_func in zip(lower_section_names, points_functions.lower_section_combination_funcs)
-    }
-
-
-    # Creating players and adding combination with current dices to each
-    players = {} 
-    for player_number in range(1, amount+1):
-        current_player = f"Player {player_number}"
-        players[current_player] = {
-            "Combinations": {
-                "Upper Section": copy.deepcopy(upper_section), 
-                "Lower Section": copy.deepcopy(lower_section) 
-            },
-            "Current dices": [],
-            "available": True
-        }
-    return players
-
 
 # safe_int_input: avoids code breaking from wrong user input
 def safe_int_input(bottom_limit=None, top_limit=None, message="Please, insert an integer"):
@@ -85,13 +47,52 @@ def safe_int_input(bottom_limit=None, top_limit=None, message="Please, insert an
 
     return userinput
 
+# generate_players: returns dictionary with players
+def generate_players(amount, maximum_name_length = 8):
+
+    upper_section_names = [ "Ones", "Twos", "Threes", "Fours", "Fives", "Sixes" ]
+
+    upper_section = { 
+        upper_section_combination_name: {
+            "function": upper_section_combination_func,
+            "points": -1 
+        } 
+        for upper_section_combination_name, upper_section_combination_func in zip(upper_section_names, points_functions.upper_section_combination_funcs) 
+    }
+
+    lower_section_names = [ "One Pair", "Two Pairs", "Three Pairs", "Three of a Kind", "Four of a Kind", "Five of a Kind", "Small Straight", "Large Straight", "Full Straight", "Full House", "Castle", "Tower", "Chance", "Maxi Yatzy" ] 
+
+    lower_section = {
+        lower_section_combination_name: {
+            "function": lower_section_combination_func,
+            "points": -1
+        }
+        for lower_section_combination_name, lower_section_combination_func in zip(lower_section_names, points_functions.lower_section_combination_funcs)
+    }
+
+
+    # Creating players and adding combination with current dices to each
+    players = {} 
+    for player_number in range(1, amount+1):
+        current_player = f"Player {player_number}"
+        players[current_player] = {
+            "combinations": {
+                "Upper Section": copy.deepcopy(upper_section), 
+                "Lower Section": copy.deepcopy(lower_section) 
+            },
+            "current dices": [],
+            "available": True,
+            "name": input(f"{current_player}, choose your name (maximum is {maximum_name_length} symbols)\n==> ")[0:maximum_name_length]
+        }
+    return players
+
 # get_dices: gets dices from user with possibility of reroll
 def get_dices(dices_amount=6, maximum_rerolls=2):
     rerolls = maximum_rerolls
     dices = [ random.randint(1, 6) for _ in range (dices_amount) ]
 
     while rerolls > 0:
-        print(f"Current dices: {dices}")
+        print(f"current dices: {dices}")
         print(f"You can reroll any amount of dices. Rerolls left: {rerolls}")
         indexes = []
         current_index = safe_int_input(0, dices_amount, f"Which of these dices you want to reroll? (print number of dice or 0 to stop)\n==> ")
@@ -116,10 +117,36 @@ def get_dices(dices_amount=6, maximum_rerolls=2):
 
     return dices
 
+def get_all_points(players, player):
+    total_sum = 0
+    upper_section = players[player]["combinations"]["Upper Section"]
+    lower_section = players[player]["combinations"]["Lower Section"]
+    combination_number = 1 
+
+    upper_section_sum = sum([ upper_section[combination]["points"] for combination in upper_section.keys() ])
+    upper_section_sum += 50 * (upper_section_sum >= 63)
+
+    lower_section_sum = sum([ lower_section[combination]["points"] for combination in lower_section.keys() ])
+
+    total_sum = upper_section_sum + lower_section_sum
+
+    return total_sum
+
 def render_box(string):
     string = "│ " + string + " │"
-    print("═" * 100)
     print("╭" + "─" * (len(string) - 2) + "╮")
     print(string)
     print("╰" + "─" * (len(string) - 2) + "╯")
-    print("═" * 100)
+
+def render_table(players):
+    score = []
+    table = [ "┏" + "━" * 10 + "┳" + "━" * 5 + "┓" + "\n" ]
+    for player in players:
+        player_points = get_all_points(players, player)
+        table += [ "┃ {:<6} ┃ ".format(players[player]["name"])]
+        table += [ "{:<3} ┃".format(player_points) + "\n" ]
+        table += ["┣" + "━" * 10 + "╋" + "━" * 5 + "┫" + "\n"]
+        score.append([player, player_points])
+    table.pop()
+    table += [ "┗" + "━" * 10 + "┻" + "━" * 5 + "┛" + "\n" ]
+    print(''.join(table))
