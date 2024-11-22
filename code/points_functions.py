@@ -51,11 +51,15 @@ def three_of_a_kind(dices):
 
     return max(dices_duplicates) * 3 * ((len(dices_duplicates) / len(ordered_dices_duplicates)) != 2)  # multiplying by check if there is three same numbers
  
-# four_of_a_kind: returns sum of three duplicates
+# four_of_a_kind: returns sum of four duplicates
 def four_of_a_kind(dices):
-    dices_duplicates = duplicates(dices) + [0, 0]
+    dices_duplicates = duplicates(dices)
+    dices_duplicates_length = len(dices_duplicates)
+
+    first_element_entries = dices_duplicates.count((dices_duplicates + [0])[0])
+    third_element_entries = dices_duplicates.count((dices_duplicates + [0, 0, 0])[2])
     
-    return max(dices_duplicates) * 4 * (dices_duplicates.count(dices_duplicates[0]) >= 4 or dices_duplicates.count(dices_duplicates[1]) >= 4)  # multiplying by check if there is four same numbers
+    return max(dices_duplicates) * 4 * ( (dices_duplicates_length == 4 and first_element_entries == 4) or (dices_duplicates_length == 6 and (first_element_entries == 4 or third_element_entries == 4)) )   # multiplying by check if there is four same numbers
 
 # five_of_a_kind: returns sum of five duplicates
 def five_of_a_kind(dices):

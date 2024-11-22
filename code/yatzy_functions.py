@@ -71,7 +71,7 @@ def generate_players(amount, maximum_name_length = 8):
     }
 
 
-    # Creating players and adding combination with current dices to each
+    # Creating players and adding combination with current dices to each player
     players = {} 
     for player_number in range(1, amount+1):
         current_player = f"Player {player_number}"
@@ -82,7 +82,7 @@ def generate_players(amount, maximum_name_length = 8):
             },
             "current dices": [],
             "available": True,
-            "name": input(f"{current_player}, choose your name (maximum is {maximum_name_length} symbols)\n==> ")[0:maximum_name_length]
+            "name": input(f"\n{current_player}, choose your name (maximum is {maximum_name_length} symbols)\n==> ")[0:maximum_name_length]
         }
     return players
 
@@ -92,7 +92,7 @@ def get_dices(dices_amount=6, maximum_rerolls=2):
     dices = [ random.randint(1, 6) for _ in range (dices_amount) ]
 
     while rerolls > 0:
-        print(f"current dices: {dices}")
+        print(f"Current dices: {dices}")
         print(f"You can reroll any amount of dices. Rerolls left: {rerolls}")
         indexes = []
         current_index = safe_int_input(0, dices_amount, f"Which of these dices you want to reroll? (print number of dice or 0 to stop)\n==> ")

@@ -33,17 +33,40 @@ def main():
             if not players[player]["available"]:
                 continue
     
-
-
-            print("═" * 100)
+            print("\n" * 2 + "═" * 100)
             yatzy_functions.render_box(f"{players[player]["name"]}, your turn!")
             print("═" * 100)
     
             rerolls = maximum_rerolls
-            # dices = yatzy_functions.get_dices()   
-            dices = [1, 2, 3, 4, 6, 1]
+            print("Your scoresheet:")
+            print("┏" + "━" * 17 + "┳" + "━"*5 + "┓")
+
+            combination_number = 1
+            section = all_combinations[combination_number]["section"]
+            combination = all_combinations[combination_number]["combination"]
+            points = players[player]["combinations"][section][combination]["points"]
+            if points == -1:
+                    points = '-'
+            while combination_number < len(all_combinations):
+                print("┃ {:<15} ┃ ".format(combination), end='')
+                print("{:<3} ┃".format(points))
+                print("┣" + "━" * 17 + "╋" + "━" * 5 + "┫")
+                combination_number += 1
+                section = all_combinations[combination_number]["section"]
+                combination = all_combinations[combination_number]["combination"]
+                points = players[player]["combinations"][section][combination]["points"]
+                if points == -1:
+                    points = '-'
+            print("┃ {:<15} ┃ ".format(combination), end='')
+            print("{:<3} ┃".format(points))
+            print("┗" + "━" * 17 + "┻" + "━" * 5 + "┛" + '\n')
+
+            dices = yatzy_functions.get_dices()   
 
             players[player]["current dices"] = dices[:]  # Added [:] to create a new massive
+            print("\n" + "═" * 100)
+            yatzy_functions.render_box(f"Your dices: {dices}") 
+            print("═" * 100)
 
             unused_combinations = {}
             available_combinations = {}
@@ -60,32 +83,6 @@ def main():
                             available_combinations[available_combination_number] = { "section": section, "combination": combination }
     
             if len(available_combinations):    
-                print("Your scoresheet:")
-                print("┏" + "━" * 17 + "┳" + "━"*5 + "┓")
-
-                combination_number = 1
-                section = all_combinations[combination_number]["section"]
-                combination = all_combinations[combination_number]["combination"]
-                points = players[player]["combinations"][section][combination]["points"]
-                if points == -1:
-                        points = '-'
-                while combination_number < len(all_combinations):
-                    print("┃ {:<15} ┃ ".format(combination), end='')
-                    print("{:<3} ┃".format(points))
-                    print("┣" + "━" * 17 + "╋" + "━" * 5 + "┫")
-                    combination_number += 1
-                    section = all_combinations[combination_number]["section"]
-                    combination = all_combinations[combination_number]["combination"]
-                    points = players[player]["combinations"][section][combination]["points"]
-                    if points == -1:
-                        points = '-'
-                print("┃ {:<15} ┃ ".format(combination), end='')
-                print("{:<3} ┃".format(points))
-                print("┗" + "━" * 17 + "┻" + "━" * 5 + "┛" + '\n')
-
-                print("═" * 100)
-                yatzy_functions.render_box(f"Your dices: {dices}") 
-                print("═" * 100)
                 print("\nAvailable combinations: ") 
                 combination_number = 1
                 while combination_number <= len(available_combinations):
@@ -97,9 +94,6 @@ def main():
                 print("━"*100 + "\n")
                 user_choice = yatzy_functions.safe_int_input(0, available_combination_number, "\nPick combination which you want to use or 0 if you want to cross\n○ ")
             else:
-                print("═" * 100)
-                yatzy_functions.render_box(f"Your dices: {dices}")
-                print("═" * 100)
                 user_choice = 0
                 print("There is no available combinations for your dices :(\n")
 
@@ -119,9 +113,6 @@ def main():
     
             if len(unused_combinations) - 1 == 0:
                 players[player]["available"] = False
-
-            # print(f"Player: {players[player]}")
-            
 
         game_over = set([players[f"Player {player_number}"]["available"] for player_number in range(1, players_amount + 1)]) == {0}
 
@@ -159,6 +150,5 @@ def main():
             print()
 
     print("╧" * 100)
-
 
 main()
