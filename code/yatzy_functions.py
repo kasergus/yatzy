@@ -13,10 +13,8 @@ def safe_int_input(bottom_limit=None, top_limit=None, message="Please, insert an
             userinput = input(message)
             if not (userinput.isdigit() and bottom_limit <= int(userinput) <= top_limit):
                 print(f"Please, insert an integer between {bottom_limit} and {top_limit}\n")
-                userinput = bottom_limit - 1
-            else:
-                userinput = int(userinput)
-
+                userinput = bottom_limit - 1 
+            else: userinput = int(userinput)
     # If user provided only bottom_limit
     elif bottom_limit:
         while not(bottom_limit <= userinput):
@@ -50,6 +48,7 @@ def safe_int_input(bottom_limit=None, top_limit=None, message="Please, insert an
 # generate_players: returns dictionary with players
 def generate_players(amount, maximum_name_length = 8):
 
+    # Creating unique name and function for every combination
     upper_section_names = [ "Ones", "Twos", "Threes", "Fours", "Fives", "Sixes" ]
 
     upper_section = { 
@@ -86,11 +85,24 @@ def generate_players(amount, maximum_name_length = 8):
         }
     return players
 
+# get_all_combinations: gets all combinations for displaying
+def get_all_combinations(players):
+    global_combination_number = 0
+    all_combinations = {}
+    for section in players["Player 1"]["combinations"]:
+        for combination in players["Player 1"]["combinations"][section]:
+            global_combination_number += 1
+            # Numerating all combinations and memorizing their sections
+            all_combinations[global_combination_number] = { "section": section, "combination": combination }
+
+    return all_combinations
+
 # get_dices: gets dices from user with possibility of reroll
 def get_dices(dices_amount=6, maximum_rerolls=2):
     rerolls = maximum_rerolls
     dices = [ random.randint(1, 6) for _ in range (dices_amount) ]
 
+    # Giving user possibility to reroll dices
     while rerolls > 0:
         print(f"Current dices: {dices}")
         print(f"You can reroll any amount of dices. Rerolls left: {rerolls}")
@@ -117,6 +129,7 @@ def get_dices(dices_amount=6, maximum_rerolls=2):
 
     return dices
 
+# get_all_points: get sum of all points of player
 def get_all_points(players, player):
     total_sum = 0
     upper_section = players[player]["combinations"]["Upper Section"]
@@ -124,7 +137,8 @@ def get_all_points(players, player):
     combination_number = 1 
 
     upper_section_sum = sum([ upper_section[combination]["points"] for combination in upper_section.keys() ])
-    upper_section_sum += 50 * (upper_section_sum >= 63)
+    # adding 50 points bonus if sum of uppper section combinations is more than 63
+    upper_section_sum += 50 * (upper_section_sum >= 63)  
 
     lower_section_sum = sum([ lower_section[combination]["points"] for combination in lower_section.keys() ])
 
@@ -132,13 +146,77 @@ def get_all_points(players, player):
 
     return total_sum
 
+# render_box: render box for nicer view
 def render_box(string):
     string = "│ " + string + " │"
     print("╭" + "─" * (len(string) - 2) + "╮")
     print(string)
     print("╰" + "─" * (len(string) - 2) + "╯")
 
-def render_table(players):
+# render_score_sheet: rendering score sheet of current player for nicer view
+def render_score_sheet(players, player):
+    score_sheet = ["┏" + "━" * 17 + "┳" + "━" * 5 + "┓" + "\n"]
+    all_combinations = get_all_combinations(players)
+    combination_number = 1
+
+    # Adding upper section and getting sum of all combinations in it
+    section = "Upper Section"
+    upper_section_points_sum = 0
+    while section == "Upper Section":
+        combination = all_combinations[combination_number]["combination"]
+
+        points = players[player]["combinations"][section][combination]["points"]
+        upper_section_points_sum += points * (points != -1)
+        if points == -1:
+            points = '-'
+
+        score_sheet.append("┃ {:<15} ┃ ".format(combination))
+        score_sheet.append("{:<3} ┃".format(points) + "\n")
+        score_sheet.append("┣" + "━" * 17 + "╋" + "━" * 5 + "┫" + "\n")
+
+        combination_number += 1
+        section = all_combinations[combination_number]["section"]
+
+    # Adding sum of all upper section combinatons
+    score_sheet.append("┃ {:<15} ┃ ".format("Sum"))
+    score_sheet.append("{:<3} ┃".format(upper_section_points_sum) + "\n")
+    score_sheet.append("┣" + "━" * 17 + "╋" + "━" * 5 + "┫" + "\n")
+
+    # Adding bonus and making it equal 50 if sum of all upper section combinations is more than 63
+    score_sheet.append("┃ {:<15} ┃ ".format("Bonus (63+)"))
+    score_sheet.append("{:<3} ┃".format(50 * (upper_section_points_sum >= 63)) + "\n")
+    score_sheet.append("┗" + "━" * 17 + "┻" + "━" * 5 + "┛" + '\n')
+
+    # Splitting table with lower section combinations
+    score_sheet.append("━" * 25 + "\n")
+    score_sheet.append("┏" + "━" * 17 + "┳" + "━"*5 + "┓" + "\n")
+
+    # Adding lower section
+    while combination_number <= len(all_combinations):
+        section = all_combinations[combination_number]["section"]
+        combination = all_combinations[combination_number]["combination"]
+        points = players[player]["combinations"][section][combination]["points"]
+
+        if points == -1:
+            points = '-'
+
+        score_sheet.append("┃ {:<15} ┃ ".format(combination))
+        score_sheet.append("{:<3} ┃".format(points) + "\n")
+        score_sheet.append("┣" + "━" * 17 + "╋" + "━" * 5 + "┫" + "\n")
+
+        combination_number += 1
+
+    # Deleting last layer and adding another for better view
+    score_sheet.pop()
+    score_sheet.append("┗" + "━" * 17 + "┻" + "━" * 5 + "┛" + '\n')
+
+    # Printing whole table
+    print(''.join(score_sheet))
+
+
+# render_players_table: rendering table (for better view) of players total points
+def render_players_table(players):
+    # Adding players and points in table
     score = []
     table = [ "┏" + "━" * 10 + "┳" + "━" * 5 + "┓" + "\n" ]
     for player in players:
@@ -147,6 +225,10 @@ def render_table(players):
         table += [ "{:<3} ┃".format(player_points) + "\n" ]
         table += ["┣" + "━" * 10 + "╋" + "━" * 5 + "┫" + "\n"]
         score.append([player, player_points])
+
+    # Deleting last layer and adding another for better view
     table.pop()
     table += [ "┗" + "━" * 10 + "┻" + "━" * 5 + "┛" + "\n" ]
+
+    # Printing whole table
     print(''.join(table))
