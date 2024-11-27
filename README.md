@@ -150,12 +150,13 @@ The project will have the following functions:
 
 * `get_dices()` - returns dice that will be generated randomly (with the ability to re-roll at the user's discretion)
 * `generate_players(amount)` - creates players, returns the `players` dictionary (more details in the diagram above), where the number of players is specified by the user
+* `get_all_combinations(player)` - gets all combinations template for more easier access
+* `render_box(string)` - renders one string in the box (for better view)
+* `render_scoresheet(players, player)` - renders all combinations of player
+* `render_players_table(players)` - renders table with player name and player scores
 * `safe_in_input()` - ensures that the code will not be broken if the user specifies an invalid value (for example, a string or a negative number), returns the number entered by the user
 
 In addition to these functions, there are internal ones (for example, a function generator and functions for combinations), but they will not be used relative to the programmer who writes the code, so there is no point in including them in this documentation. Internal functions are used to implement and ensure the correct operation of the functions described above.
 
 > [!NOTE]
 > You can find all sources in the `code` directory.
-
-> [!WARNING]
-> The project is under development, and all functionality is not fully implemented at the moment.
